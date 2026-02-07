@@ -1,7 +1,13 @@
 import { useFormContext } from "react-hook-form";
-
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 const FormPrice = () => {
-  const { register, watch } = useFormContext();
+  const {
+    register,
+    watch,
+    formState: { errors },
+  } = useFormContext();
 
   // 🔍 即時監聽表單欄位
   const exchangeRate = watch("exchangeRate") || 0;
@@ -10,54 +16,69 @@ const FormPrice = () => {
   // 🧮 自動計算台幣價格
   const twdPrice = (costPrice * exchangeRate).toFixed(2);
   return (
-    <fieldset className="fieldset w-full space-y-4">
-      <legend className="fieldset-legend px-2 text-2xl">商品價格</legend>
-      <div className="border-base-content/50 flex flex-col space-y-6 rounded-xl border p-6">
-        <div className="fieldset-field">
-          <label className="fieldset-label text-base-content mb-3 text-lg font-medium">
-            匯率
-          </label>
-          <input
-            {...register("exchangeRate", { valueAsNumber: true })}
-            type="number"
-            step="0.01"
-            className="input input-bordered h-12 w-full font-mono"
-            placeholder="請輸入匯率"
-          />
-        </div>
-        <div className="fieldset-field gap-6">
-          {/* 第一欄 */}
-          <label className="fieldset-label text-base-content mb-2 text-lg font-medium">
-            成本價格
-          </label>
-          <div className="flex flex-col gap-2">
-            <input
-              {...register("costPrice", { valueAsNumber: true })}
+    <Card className="w-full">
+      <CardHeader>
+        <CardTitle>商品價格</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="flex flex-col space-y-6">
+          <div>
+            <Label className="mb-2 text-neutral-600">匯率</Label>
+            <Input
+              {...register("exchangeRate", { valueAsNumber: true })}
               type="number"
-              className="input input-bordered h-12 w-full font-mono"
+              className="w-full"
+              placeholder="請輸入匯率"
+              step={"0.1"}
+            />
+            {errors.exchangeRate && (
+              <p className="mt-2 text-sm text-red-600">
+                {errors.exchangeRate.message as string}
+              </p>
+            )}
+          </div>
+          <div className="gap-6">
+            {/* 第一欄 */}
+            <Label className="mb-2 text-neutral-600">成本價格</Label>
+            <div className="flex flex-col gap-2">
+              <Input
+                {...register("costPrice", { valueAsNumber: true })}
+                type="number"
+                className="w-full"
+                placeholder="請輸入價格"
+              />
+              {/* 第二欄 */}
+              <div className="text-oea text-sm font-medium">
+                自動計算：{costPrice} × {exchangeRate} = {twdPrice}
+              </div>
+            </div>
+            {errors.costPrice && (
+              <p className="mt-2 text-sm text-red-600">
+                {errors.costPrice.message as string}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <Label className="mb-2 text-neutral-600">商品價格</Label>
+            <Input
+              {...register("productPrice", { valueAsNumber: true })}
+              type="number"
+              className="w-full"
               placeholder="請輸入價格"
             />
-            {/* 第二欄 */}
-            <div className="text-accent text-sm font-medium">
-              自動計算：{costPrice} × {exchangeRate} = {twdPrice}
-            </div>
+            <span className="mt-2 text-xs font-medium text-neutral-400">
+              單位(臺幣)
+            </span>
+            {errors.productPrice && (
+              <p className="mt-2 text-sm text-red-600">
+                {errors.productPrice.message as string}
+              </p>
+            )}
           </div>
         </div>
-
-        <div className="fieldset-field">
-          <label className="fieldset-label text-base-content mb-3 text-lg font-medium">
-            商品價格
-          </label>
-          <input
-            {...register("productPrice", { valueAsNumber: true })}
-            type="number"
-            className="input input-bordered h-12 w-full font-mono"
-            placeholder="請輸入價格"
-          />
-          <p className="text-accent mt-2">單位(臺幣)</p>
-        </div>
-      </div>
-    </fieldset>
+      </CardContent>
+    </Card>
   );
 };
 

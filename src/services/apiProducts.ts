@@ -44,7 +44,7 @@ export async function updateProduct(id: string, productData: ProductFormData) {
     // 2. 更新商品基本資料
     const { data: updatedProduct, error: productError } = await supabase
       .from("products")
-      .update(productFields)
+      .update({ ...productFields, updated_at: new Date().toISOString() })
       .eq("id", id)
       .select()
       .single();
@@ -101,7 +101,7 @@ export async function getProducts() {
   if (error) {
     console.error("獲取商品失敗:", error);
   }
-  return data;
+  return data || [];
 }
 
 export async function getProduct({ productId }: { productId: string }) {
@@ -187,9 +187,7 @@ export async function deleteProduct(productId: string) {
           return match ? match[1] : null;
         })
         .filter(Boolean);
-
-      console.log("準備刪除的圖片路徑:", filePaths);
-
+      // console.log("準備刪除的圖片路徑:", filePaths);
       // 批量刪除圖片
       if (filePaths.length > 0) {
         const { error: storageError } = await supabase.storage
@@ -198,10 +196,6 @@ export async function deleteProduct(productId: string) {
 
         if (storageError) {
           console.error("刪除圖片失敗:", storageError);
-          // 不拋出錯誤，因為商品已經刪除成功
-          toast.warning("商品已刪除，但部分圖片刪除失敗");
-        } else {
-          console.log("圖片刪除成功");
         }
       }
     }

@@ -1,9 +1,14 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
+import { getCurrentUser } from "../services/apiAuth";
 
 export const Route = createFileRoute("/")({
-  component: RouteComponent,
-});
+  beforeLoad: async () => {
+    const user = await getCurrentUser();
 
-function RouteComponent() {
-  return <div>home</div>;
-}
+    if (!user) {
+      throw redirect({ to: "/login" });
+    }
+
+    throw redirect({ to: "/products" });
+  },
+});

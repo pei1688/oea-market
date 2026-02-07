@@ -9,21 +9,22 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as ProductsRouteImport } from './routes/products'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as ProductsRouteRouteImport } from './routes/products/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProductsIndexRouteImport } from './routes/products/index'
+import { Route as ProductsDashboardRouteImport } from './routes/products/dashboard'
 import { Route as ProductsCreateRouteImport } from './routes/products/create'
 import { Route as ProductsProductIdRouteImport } from './routes/products/$productId'
 
-const ProductsRoute = ProductsRouteImport.update({
-  id: '/products',
-  path: '/products',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProductsRouteRoute = ProductsRouteRouteImport.update({
+  id: '/products',
+  path: '/products',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -34,25 +35,31 @@ const IndexRoute = IndexRouteImport.update({
 const ProductsIndexRoute = ProductsIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => ProductsRoute,
+  getParentRoute: () => ProductsRouteRoute,
+} as any)
+const ProductsDashboardRoute = ProductsDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => ProductsRouteRoute,
 } as any)
 const ProductsCreateRoute = ProductsCreateRouteImport.update({
   id: '/create',
   path: '/create',
-  getParentRoute: () => ProductsRoute,
+  getParentRoute: () => ProductsRouteRoute,
 } as any)
 const ProductsProductIdRoute = ProductsProductIdRouteImport.update({
   id: '/$productId',
   path: '/$productId',
-  getParentRoute: () => ProductsRoute,
+  getParentRoute: () => ProductsRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/products': typeof ProductsRouteRouteWithChildren
   '/login': typeof LoginRoute
-  '/products': typeof ProductsRouteWithChildren
   '/products/$productId': typeof ProductsProductIdRoute
   '/products/create': typeof ProductsCreateRoute
+  '/products/dashboard': typeof ProductsDashboardRoute
   '/products/': typeof ProductsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -60,58 +67,68 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/products/$productId': typeof ProductsProductIdRoute
   '/products/create': typeof ProductsCreateRoute
+  '/products/dashboard': typeof ProductsDashboardRoute
   '/products': typeof ProductsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/products': typeof ProductsRouteRouteWithChildren
   '/login': typeof LoginRoute
-  '/products': typeof ProductsRouteWithChildren
   '/products/$productId': typeof ProductsProductIdRoute
   '/products/create': typeof ProductsCreateRoute
+  '/products/dashboard': typeof ProductsDashboardRoute
   '/products/': typeof ProductsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/login'
     | '/products'
+    | '/login'
     | '/products/$productId'
     | '/products/create'
+    | '/products/dashboard'
     | '/products/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/products/$productId' | '/products/create' | '/products'
+  to:
+    | '/'
+    | '/login'
+    | '/products/$productId'
+    | '/products/create'
+    | '/products/dashboard'
+    | '/products'
   id:
     | '__root__'
     | '/'
-    | '/login'
     | '/products'
+    | '/login'
     | '/products/$productId'
     | '/products/create'
+    | '/products/dashboard'
     | '/products/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ProductsRouteRoute: typeof ProductsRouteRouteWithChildren
   LoginRoute: typeof LoginRoute
-  ProductsRoute: typeof ProductsRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/products': {
-      id: '/products'
-      path: '/products'
-      fullPath: '/products'
-      preLoaderRoute: typeof ProductsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/login': {
       id: '/login'
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/products': {
+      id: '/products'
+      path: '/products'
+      fullPath: '/products'
+      preLoaderRoute: typeof ProductsRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -126,45 +143,54 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/products/'
       preLoaderRoute: typeof ProductsIndexRouteImport
-      parentRoute: typeof ProductsRoute
+      parentRoute: typeof ProductsRouteRoute
+    }
+    '/products/dashboard': {
+      id: '/products/dashboard'
+      path: '/dashboard'
+      fullPath: '/products/dashboard'
+      preLoaderRoute: typeof ProductsDashboardRouteImport
+      parentRoute: typeof ProductsRouteRoute
     }
     '/products/create': {
       id: '/products/create'
       path: '/create'
       fullPath: '/products/create'
       preLoaderRoute: typeof ProductsCreateRouteImport
-      parentRoute: typeof ProductsRoute
+      parentRoute: typeof ProductsRouteRoute
     }
     '/products/$productId': {
       id: '/products/$productId'
       path: '/$productId'
       fullPath: '/products/$productId'
       preLoaderRoute: typeof ProductsProductIdRouteImport
-      parentRoute: typeof ProductsRoute
+      parentRoute: typeof ProductsRouteRoute
     }
   }
 }
 
-interface ProductsRouteChildren {
+interface ProductsRouteRouteChildren {
   ProductsProductIdRoute: typeof ProductsProductIdRoute
   ProductsCreateRoute: typeof ProductsCreateRoute
+  ProductsDashboardRoute: typeof ProductsDashboardRoute
   ProductsIndexRoute: typeof ProductsIndexRoute
 }
 
-const ProductsRouteChildren: ProductsRouteChildren = {
+const ProductsRouteRouteChildren: ProductsRouteRouteChildren = {
   ProductsProductIdRoute: ProductsProductIdRoute,
   ProductsCreateRoute: ProductsCreateRoute,
+  ProductsDashboardRoute: ProductsDashboardRoute,
   ProductsIndexRoute: ProductsIndexRoute,
 }
 
-const ProductsRouteWithChildren = ProductsRoute._addFileChildren(
-  ProductsRouteChildren,
+const ProductsRouteRouteWithChildren = ProductsRouteRoute._addFileChildren(
+  ProductsRouteRouteChildren,
 )
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ProductsRouteRoute: ProductsRouteRouteWithChildren,
   LoginRoute: LoginRoute,
-  ProductsRoute: ProductsRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

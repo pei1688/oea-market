@@ -1,49 +1,47 @@
 import { useFormContext } from "react-hook-form";
 
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 const FormInfo = () => {
   const {
     register,
     formState: { errors },
   } = useFormContext();
   return (
-    <fieldset className="fieldset w-full space-y-4">
-      <legend className="fieldset-legend px-2 text-2xl">商品資訊</legend>
-      <div className="border-base-content/10 flex flex-col space-y-6 rounded-xl border px-6 py-10">
-        <div className="fieldset-field">
-          <label className="fieldset-label text-base-content mb-3 text-lg font-medium">
-            商品名稱
-          </label>
-          <input
-            type="text"
-            {...register("productName")}
-            className="input w-full"
-            placeholder="請輸入名稱"
-          />
-          {errors.productName && (
-            <p className="label text-red-500">
-              {errors.productName.message as string}
-            </p>
-          )}
-        </div>
+    <Card className="w-full">
+      <CardHeader>
+        <CardTitle>商品資訊</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="flex flex-col space-y-6">
+          <div>
+            <Label className="mb-2 text-neutral-600">商品名稱</Label>
+            <Input
+              type="text"
+              {...register("productName")}
+              className="w-full"
+              placeholder=" 商品名稱"
+            />
+            {errors.productName && (
+              <p className="mt-2 text-sm text-red-600">
+                {errors.productName.message as string}
+              </p>
+            )}
+          </div>
 
-        <div className="fieldset-field">
-          <label className="fieldset-label text-base-content mb-3 text-lg font-medium">
-            商品描述
-          </label>
-          <textarea
-            {...register("productDescription")}
-            className="textarea textarea-bordered w-full"
-            placeholder="請輸入描述"
-            rows={4}
-          />
-          {errors.productDescription && (
-            <p className="mt-1 text-sm text-red-500">
-              {errors.productDescription.message as string}
-            </p>
-          )}
+          <div>
+            <Label className="mb-2 text-neutral-600">商品描述</Label>
+            <Textarea
+              {...register("productDescription")}
+              className="min-h-24 w-full"
+              placeholder="請輸入描述"
+            />
+          </div>
         </div>
-      </div>
-    </fieldset>
+      </CardContent>
+    </Card>
   );
 };
 

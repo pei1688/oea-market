@@ -10,6 +10,8 @@ import FormPrice from "./-components/create/form-price";
 import FormInfo from "./-components/create/form-info";
 import { getProduct } from "../../services/apiProducts";
 import { useProductForm } from "../../hooks/useProductForm";
+import { Button } from "@/components/ui/button";
+import Spinner from "@/components/ui/spinner";
 
 export const Route = createFileRoute("/products/$productId")({
   component: RouteComponent,
@@ -36,8 +38,8 @@ function RouteComponent() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-lg">載入中...</div>
+      <div className="flex h-screen items-center justify-center">
+        <Spinner />
       </div>
     );
   }
@@ -57,23 +59,28 @@ function RouteComponent() {
             <div className="flex items-center gap-4">
               <Link
                 to="/products"
-                className="border-accent inline-flex items-center rounded-lg border p-1"
+                className="rounded-2xl p-3 transition-all hover:bg-neutral-100"
               >
                 <svg
-                  className="mr-1 size-12"
-                  fill="none"
-                  stroke="currentColor"
+                  width="36px"
+                  height="36px"
                   viewBox="0 0 24 24"
+                  strokeWidth="2"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  color="currentColor"
+                  className="text-primary"
                 >
                   <path
+                    d="M21 12L3 12M3 12L11.5 3.5M3 12L11.5 20.5"
+                    stroke="currentColor"
+                    strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 19l-7-7 7-7"
-                  />
+                  ></path>
                 </svg>
               </Link>
-              <div className="">
+              <div>
                 返回商品列表
                 <h1 className="text-3xl font-bold">編輯商品</h1>
               </div>
@@ -85,33 +92,38 @@ function RouteComponent() {
               {/* Left Column */}
               <div className="lg:col-span-2">
                 <div className="space-y-6">
-                  <FormInfo />
-
-                  <FormTags />
-
                   <FormImage
                     onImageUpload={handleImageSelect}
                     onImageRemove={removeImage}
                     isUploading={isUploading}
                   />
-
-                  <FormInventory />
-
+                  <FormInfo />
                   <FormVariants />
+                  <FormInventory />
                 </div>
               </div>
 
               {/* Right Column */}
-              <div className="lg:col-span-1">
+              <div className="space-y-6 lg:col-span-1">
+                <FormTags />
                 <FormPrice />
-
-                <button
+                <Button
                   type="submit"
                   disabled={form.formState.isSubmitting || isUploading}
-                  className="bg-accent text-accent-content mt-6 w-full rounded-lg px-4 py-3 font-medium disabled:cursor-not-allowed disabled:opacity-50"
+                  className="mt-6 hidden w-full rounded-lg font-medium disabled:cursor-not-allowed disabled:opacity-50 lg:block"
                 >
                   {form.formState.isSubmitting ? "更新中..." : "更新商品"}
-                </button>
+                </Button>
+              </div>
+              {/* mobile*/}
+              <div className="bg-muted fixed inset-x-0 bottom-0 z-999 block p-4 lg:hidden">
+                <Button
+                  type="submit"
+                  disabled={form.formState.isSubmitting || isUploading}
+                  className="w-full font-medium disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {form.formState.isSubmitting ? "更新中..." : "更新商品"}
+                </Button>
               </div>
             </div>
           </form>

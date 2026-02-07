@@ -1,15 +1,18 @@
 import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
-import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import {
   createProducts,
+  deleteProduct,
   updateProduct,
   uploadProductImage,
 } from "../services/apiProducts";
 import type { ProductFormData } from "../types/products";
-
+import { zodResolver } from "@hookform/resolvers/zod";
+import { productSchema } from "@/schemas/productSchema";
+import { generateInventoryNumber } from "@/lib/utils";
+import { useNavigate } from "@tanstack/react-router";
 interface UseProductFormOptions {
   mode?: "create" | "edit";
   productId?: string;
@@ -18,11 +21,12 @@ interface UseProductFormOptions {
 
 export function useProductForm(options: UseProductFormOptions = {}) {
   const { mode = "create", productId, initialData } = options;
+
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-
-  const form = useForm<ProductFormData>({
-    defaultValues: initialData || {
+  const form = useForm({
+    resolver: zodResolver(productSchema),
+    defaultValues: {
       productName: "",
       productDescription: "",
       productTags: "",
@@ -52,11 +56,15 @@ export function useProductForm(options: UseProductFormOptions = {}) {
       queryClient.invalidateQueries({ queryKey: ["products"] });
       setPendingFiles([]);
       toast.success("商品建立成功");
-      navigate({ to: "/products" });
+      const savedPage = sessionStorage.getItem("productsPage");
+      navigate({
+        to: "/products",
+        search: savedPage ? { page: Number(savedPage) } : { page: 0 },
+      });
     },
     onError: (error) => {
-      console.error("建立商品失敗:", error);
-      toast.error("建立商品失敗");
+      console.error("商品建立失敗:", error);
+      toast.error("商品建立失敗");
     },
   });
 
@@ -68,11 +76,28 @@ export function useProductForm(options: UseProductFormOptions = {}) {
       queryClient.invalidateQueries({ queryKey: ["product", productId] });
       setPendingFiles([]);
       toast.success("商品更新成功");
-      navigate({ to: "/products" });
+      const savedPage = sessionStorage.getItem("productsPage");
+      navigate({
+        to: "/products",
+        search: savedPage ? { page: Number(savedPage) } : { page: 0 },
+      });
     },
     onError: (error) => {
-      console.error("更新商品失敗:", error);
-      toast.error("更新商品失敗");
+      console.error("商品更新失敗:", error);
+      toast.error("商品更新失敗");
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (productId: string) => deleteProduct(productId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["product", productId] });
+      toast.success("商品刪除成功");
+    },
+    onError: (error) => {
+      console.error("商品刪除失敗:", error);
+      toast.error("商品刪除失敗");
     },
   });
 
@@ -82,6 +107,11 @@ export function useProductForm(options: UseProductFormOptions = {}) {
     try {
       // 1. 上傳圖片
       const uploadedUrls: string[] = [];
+
+      if (!data.inventoryNumber) {
+        data.inventoryNumber = generateInventoryNumber();
+        form.setValue("inventoryNumber", data.inventoryNumber);
+      }
 
       if (pendingFiles.length > 0) {
         const uploadPromises = pendingFiles.map((file) =>
@@ -164,6 +194,7 @@ export function useProductForm(options: UseProductFormOptions = {}) {
     handleSubmit,
     handleImageSelect,
     removeImage,
+    deleteMutation,
     isUploading,
     isSubmitting:
       mode === "edit" ? updateMutation.isPending : createMutation.isPending,

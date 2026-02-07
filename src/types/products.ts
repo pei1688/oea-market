@@ -1,3 +1,6 @@
+import type { productSchema } from "@/schemas/productSchema";
+import type z from "zod";
+
 // 商品變體類型
 export interface ProductVariant {
   id?: string;
@@ -7,18 +10,7 @@ export interface ProductVariant {
 }
 
 // 商品表單資料類型
-export interface ProductFormData {
-  productName: string;
-  productDescription: string;
-  productTags: string;
-  productImages: string[];
-  inventoryNumber: string;
-  inventoryQuantity: number;
-  exchangeRate: number;
-  costPrice: number;
-  productPrice: number;
-  variants?: ProductVariant[];
-}
+export type ProductFormData = z.infer<typeof productSchema>;
 
 // API 返回的商品資料類型
 export interface Product extends ProductFormData {
@@ -34,3 +26,10 @@ export interface ProductsQueryParams {
   category?: string;
   search?: string;
 }
+
+export type Payment = {
+  id: string;
+  amount: number;
+  status: "pending" | "processing" | "success" | "failed";
+  email: string;
+};
